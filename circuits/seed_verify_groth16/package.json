@@ -1,0 +1,15 @@
+{
+  "name": "seed_verify_groth16",
+  "version": "1.0.0",
+  "description": "Groth16 seed verification circuit (Poseidon hash) for Cangkulan",
+  "type": "module",
+  "scripts": {
+    "build": "bash build.sh",
+    "prove": "node generate-proof.mjs"
+  },
+  "dependencies": {
+    "circomlib": "^2.0.5",
+    "snarkjs": "^0.7.5",
+    "circomlibjs": "^0.1.7"
+  }
+}

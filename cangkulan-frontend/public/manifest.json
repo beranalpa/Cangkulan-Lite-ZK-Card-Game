@@ -1,0 +1,22 @@
+{
+  "name": "Cangkulan — On-chain Card Game",
+  "short_name": "Cangkulan",
+  "description": "Two-player Indonesian trick-taking card game on Stellar blockchain with ZK commitments",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f3ea",
+  "theme_color": "#059669",
+  "orientation": "portrait-primary",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "/cangkulan-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "lang": "en",
+  "dir": "ltr"
+}

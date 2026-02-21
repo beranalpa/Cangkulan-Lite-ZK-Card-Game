@@ -1,0 +1,31 @@
+{
+  "name": "cangkulan-lite-zk-card-game",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "setup": "bun run scripts/setup.ts",
+    "auto-battle": "bun run scripts/auto-battles.ts",
+    "build": "bun run scripts/build.ts",
+    "deploy": "bun run scripts/deploy.ts",
+    "deploy:local": "bun run scripts/deploy-local.ts",
+    "bindings": "bun run scripts/bindings.ts",
+    "dev": "bun --cwd=cangkulan-frontend run dev",
+    "dev:game": "bun run scripts/dev-game.ts",
+    "ws-lobby": "bun run scripts/ws-lobby.ts",
+    "seed:stats": "bun run scripts/seed-stats.ts",
+    "seed:pedersen": "bun run scripts/seed-stats-pedersen.ts",
+    "seed:noir": "bun run scripts/seed-stats-noir.ts",
+    "test:zk": "bun run scripts/test-zk-modes.ts",
+    "test:nizk": "bun run scripts/test-nizk.ts",
+    "test:pedersen": "bun run scripts/test-pedersen.ts",
+    "test:noir": "bun run scripts/test-noir.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "^14.5.0",
+    "buffer": "6.0.3",
+    "js-sha3": "^0.9.3"
+  }
+}

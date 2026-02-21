@@ -1,0 +1,100 @@
+# ══════════════════════════════════════════════════════════════
+#  Sensitive / Secret Data
+# ══════════════════════════════════════════════════════════════
+.env
+.env.*
+!.env.example
+.seed-wallets.json
+
+# ══════════════════════════════════════════════════════════════
+#  Build Artifacts
+# ══════════════════════════════════════════════════════════════
+target/
+*.wasm
+dist/
+dist-node/
+*-frontend/dist/
+*-frontend/dist-node/
+docs/
+
+# Removed template / non-Cangkulan directories (kept on disk, excluded from repo)
+sgs_frontend/
+template_frontend/
+contracts/dice-duel/
+contracts/number-guess/
+contracts/twenty-one/
+contracts/ultrahonk-verifier/
+contracts/risc0-mock/
+
+# ══════════════════════════════════════════════════════════════
+#  Generated / Auto-generated
+# ══════════════════════════════════════════════════════════════
+bindings/
+deployment.json
+deployment-local.json
+*.d.ts
+*.tsbuildinfo
+
+# ══════════════════════════════════════════════════════════════
+#  Dependencies & Lock Files
+# ══════════════════════════════════════════════════════════════
+node_modules/
+bun.lock
+bun.lockb
+Cargo.lock
+
+# ══════════════════════════════════════════════════════════════
+#  Test Artifacts
+# ══════════════════════════════════════════════════════════════
+test_snapshots/
+test-results/
+playwright-report/
+*-frontend/test-results/
+*-frontend/playwright-report/
+coverage/
+
+# ══════════════════════════════════════════════════════════════
+#  IDE & Editor
+# ══════════════════════════════════════════════════════════════
+.vscode/
+.idea/
+*.swp
+*.swo
+*.code-workspace
+
+# ══════════════════════════════════════════════════════════════
+#  OS Files
+# ══════════════════════════════════════════════════════════════
+.DS_Store
+Thumbs.db
+
+# ══════════════════════════════════════════════════════════════
+#  Logs
+# ══════════════════════════════════════════════════════════════
+*.log
+npm-debug.log*
+
+# ══════════════════════════════════════════════════════════════
+#  Soroban / Stellar CLI
+# ══════════════════════════════════════════════════════════════
+.soroban/
+
+# ══════════════════════════════════════════════════════════════
+#  ZK Circuits Build
+# ══════════════════════════════════════════════════════════════
+circuits/*/target/
+
+# ══════════════════════════════════════════════════════════════
+#  Internal Audit / Analysis (not part of submission)
+# ══════════════════════════════════════════════════════════════
+AUDIT_TODO.md
+ZK_BRAINSTORM.md
+ZK_AUDIT_REPORT.md
+ZK_FLOW_TRACE_REPORT.md
+ZK_FRONTEND_AUDIT_REPORT.md
+AGENTS.md
+.git-backup/
+scripts/create.ts
+scripts/publish.ts
+DORAHACKS_DETAILS.md
+ZK_POSITIONING.md

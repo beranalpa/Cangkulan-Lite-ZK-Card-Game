@@ -1,0 +1,4 @@
+node_modules/
+target/*.gz
+target/proof.with_public_inputs
+package-lock.json

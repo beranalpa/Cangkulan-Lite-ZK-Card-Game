@@ -1,0 +1,706 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,600&display=swap");
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
+
+@custom-variant dark (&:where([data-theme="dark"] *));
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --font-display: "Lora", "Times New Roman", serif;
+  --font-serif: "Lora", "Times New Roman", serif;
+  --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", "Fira Code", "JetBrains Mono", monospace;
+  --color-bg: #f4f7f6;
+  --color-surface: #ffffff;
+  --color-surface-warm: #d6d2c4;
+  --color-ink: #0f0f0f;
+  --color-ink-muted: #3f3f3f;
+  --color-accent: #fdda24;
+  --color-accent-strong: #002e5d;
+  --color-highlight: #b7ace8;
+  --color-teal: #00a7b5;
+  --color-border: rgba(15, 15, 15, 0.12);
+  --color-success: #00a7b5;
+  --color-warning: #fdda24;
+  --color-error: #c8463b;
+  --color-info: #002e5d;
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+  --shadow-soft: 0 24px 54px rgba(0, 0, 0, 0.08);
+  --shadow-tight: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Dark Mode Overrides
+   ════════════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] {
+  --color-bg: #0f1117;
+  --color-surface: #1a1d27;
+  --color-surface-warm: #2a2d37;
+  --color-ink: #e8eaf0;
+  --color-ink-muted: #9ca3af;
+  --color-accent: #fdda24;
+  --color-accent-strong: #7db4ff;
+  --color-highlight: #b7ace8;
+  --color-teal: #2dd4bf;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-success: #2dd4bf;
+  --color-warning: #fdda24;
+  --color-error: #f87171;
+  --color-info: #93c5fd;
+  --shadow-soft: 0 24px 54px rgba(0, 0, 0, 0.35);
+  --shadow-tight: 0 10px 24px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] body {
+  background: radial-gradient(1200px circle at 15% -10%, rgba(253, 218, 36, 0.06), transparent 65%),
+    radial-gradient(1000px circle at 85% 5%, rgba(183, 172, 232, 0.06), transparent 70%),
+    var(--color-bg);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background: rgba(30, 33, 44, 0.9);
+  color: var(--color-ink);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] button {
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] ::selection {
+  background: var(--color-accent);
+  color: #0f0f0f;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Dark Mode — Tailwind utility overrides
+   Unlayered CSS naturally beats @layer utilities (Tailwind 4 cascade).
+   No !important needed — cascade layers guarantee correct priority.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* --- Backgrounds --- */
+[data-theme="dark"] .bg-white { background-color: var(--color-surface); }
+[data-theme="dark"] .bg-white\/70 { background-color: rgba(26, 29, 39, 0.85); }
+[data-theme="dark"] .bg-white\/60 { background-color: rgba(26, 29, 39, 0.7); }
+[data-theme="dark"] .bg-white\/80 { background-color: rgba(26, 29, 39, 0.9); }
+[data-theme="dark"] .bg-white\/90 { background-color: rgba(26, 29, 39, 0.95); }
+[data-theme="dark"] .bg-gray-50 { background-color: rgba(30, 33, 44, 0.6); }
+[data-theme="dark"] .bg-gray-100 { background-color: rgba(30, 33, 44, 0.8); }
+[data-theme="dark"] .bg-gray-200 { background-color: rgba(45, 48, 60, 0.8); }
+[data-theme="dark"] .bg-gray-300 { background-color: rgba(55, 58, 70, 0.8); }
+[data-theme="dark"] .bg-gray-400 { background-color: rgba(75, 78, 90, 0.8); }
+
+[data-theme="dark"] .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.1); }
+[data-theme="dark"] .bg-emerald-100 { background-color: rgba(16, 185, 129, 0.15); }
+[data-theme="dark"] .bg-green-50 { background-color: rgba(16, 185, 129, 0.1); }
+[data-theme="dark"] .bg-green-100 { background-color: rgba(34, 197, 94, 0.15); }
+[data-theme="dark"] .bg-red-50 { background-color: rgba(239, 68, 68, 0.1); }
+[data-theme="dark"] .bg-red-100 { background-color: rgba(239, 68, 68, 0.15); }
+[data-theme="dark"] .bg-rose-50 { background-color: rgba(244, 63, 94, 0.1); }
+[data-theme="dark"] .bg-amber-50 { background-color: rgba(245, 158, 11, 0.1); }
+[data-theme="dark"] .bg-amber-100 { background-color: rgba(245, 158, 11, 0.15); }
+[data-theme="dark"] .bg-yellow-50 { background-color: rgba(234, 179, 8, 0.1); }
+[data-theme="dark"] .bg-blue-50 { background-color: rgba(59, 130, 246, 0.1); }
+[data-theme="dark"] .bg-blue-100 { background-color: rgba(59, 130, 246, 0.15); }
+[data-theme="dark"] .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.1); }
+[data-theme="dark"] .bg-purple-50 { background-color: rgba(139, 92, 246, 0.1); }
+[data-theme="dark"] .bg-purple-100 { background-color: rgba(139, 92, 246, 0.15); }
+[data-theme="dark"] .bg-violet-50 { background-color: rgba(124, 58, 237, 0.1); }
+[data-theme="dark"] .bg-fuchsia-50 { background-color: rgba(192, 38, 211, 0.1); }
+[data-theme="dark"] .bg-slate-50 { background-color: rgba(30, 33, 44, 0.5); }
+[data-theme="dark"] .bg-orange-50 { background-color: rgba(249, 115, 22, 0.1); }
+
+/* --- Gradient from/via/to --- */
+[data-theme="dark"] .from-gray-50 { --tw-gradient-from: rgba(30, 33, 44, 0.6); }
+[data-theme="dark"] .from-emerald-50 { --tw-gradient-from: rgba(16, 185, 129, 0.08); }
+[data-theme="dark"] .from-green-50 { --tw-gradient-from: rgba(16, 185, 129, 0.08); }
+[data-theme="dark"] .from-red-50 { --tw-gradient-from: rgba(239, 68, 68, 0.08); }
+[data-theme="dark"] .from-amber-50 { --tw-gradient-from: rgba(245, 158, 11, 0.08); }
+[data-theme="dark"] .from-yellow-50 { --tw-gradient-from: rgba(234, 179, 8, 0.08); }
+[data-theme="dark"] .from-blue-50 { --tw-gradient-from: rgba(59, 130, 246, 0.08); }
+[data-theme="dark"] .from-indigo-50 { --tw-gradient-from: rgba(99, 102, 241, 0.08); }
+[data-theme="dark"] .from-purple-50 { --tw-gradient-from: rgba(139, 92, 246, 0.08); }
+[data-theme="dark"] .from-violet-50 { --tw-gradient-from: rgba(124, 58, 237, 0.08); }
+
+[data-theme="dark"] .via-teal-50 { --tw-gradient-via: rgba(20, 184, 166, 0.06); }
+[data-theme="dark"] .via-purple-50 { --tw-gradient-via: rgba(139, 92, 246, 0.06); }
+
+[data-theme="dark"] .to-white { --tw-gradient-to: rgba(26, 29, 39, 0.4); }
+[data-theme="dark"] .to-green-50 { --tw-gradient-to: rgba(16, 185, 129, 0.05); }
+[data-theme="dark"] .to-emerald-50 { --tw-gradient-to: rgba(16, 185, 129, 0.05); }
+[data-theme="dark"] .to-purple-50 { --tw-gradient-to: rgba(139, 92, 246, 0.05); }
+[data-theme="dark"] .to-violet-50 { --tw-gradient-to: rgba(124, 58, 237, 0.05); }
+[data-theme="dark"] .to-indigo-50 { --tw-gradient-to: rgba(99, 102, 241, 0.05); }
+[data-theme="dark"] .to-amber-50 { --tw-gradient-to: rgba(245, 158, 11, 0.05); }
+[data-theme="dark"] .to-orange-50 { --tw-gradient-to: rgba(249, 115, 22, 0.05); }
+[data-theme="dark"] .to-rose-50 { --tw-gradient-to: rgba(244, 63, 94, 0.05); }
+[data-theme="dark"] .to-cyan-50 { --tw-gradient-to: rgba(6, 182, 212, 0.05); }
+[data-theme="dark"] .to-slate-50 { --tw-gradient-to: rgba(51, 65, 85, 0.1); }
+
+/* --- Text Colors --- */
+[data-theme="dark"] .text-gray-900 { color: #e8eaf0; }
+[data-theme="dark"] .text-gray-800 { color: #d1d5db; }
+[data-theme="dark"] .text-gray-700 { color: #b0b5bf; }
+[data-theme="dark"] .text-gray-600 { color: #9ca3af; }
+[data-theme="dark"] .text-gray-500 { color: #6b7280; }
+[data-theme="dark"] .text-gray-400 { color: #4b5563; }
+
+[data-theme="dark"] .text-emerald-700,
+[data-theme="dark"] .text-emerald-600 { color: #34d399; }
+[data-theme="dark"] .text-emerald-800 { color: #6ee7b7; }
+[data-theme="dark"] .text-green-700 { color: #4ade80; }
+[data-theme="dark"] .text-green-800 { color: #86efac; }
+[data-theme="dark"] .text-red-600,
+[data-theme="dark"] .text-red-500 { color: #f87171; }
+[data-theme="dark"] .text-amber-700,
+[data-theme="dark"] .text-amber-600 { color: #fbbf24; }
+[data-theme="dark"] .text-amber-800 { color: #fcd34d; }
+[data-theme="dark"] .text-yellow-900 { color: #fcd34d; }
+[data-theme="dark"] .text-yellow-800 { color: #fde68a; }
+[data-theme="dark"] .text-blue-700,
+[data-theme="dark"] .text-blue-600 { color: #60a5fa; }
+[data-theme="dark"] .text-blue-800 { color: #93c5fd; }
+[data-theme="dark"] .text-purple-700,
+[data-theme="dark"] .text-purple-600 { color: #a78bfa; }
+[data-theme="dark"] .text-purple-800 { color: #c4b5fd; }
+[data-theme="dark"] .text-violet-700 { color: #a78bfa; }
+[data-theme="dark"] .text-violet-800 { color: #c4b5fd; }
+[data-theme="dark"] .text-violet-600 { color: #a78bfa; }
+[data-theme="dark"] .text-violet-500 { color: #8b5cf6; }
+[data-theme="dark"] .text-indigo-800 { color: #a5b4fc; }
+[data-theme="dark"] .text-orange-600 { color: #fb923c; }
+[data-theme="dark"] .text-teal-600 { color: #2dd4bf; }
+[data-theme="dark"] .text-cyan-600 { color: #22d3ee; }
+
+/* --- Border Colors --- */
+[data-theme="dark"] .border-gray-100 { border-color: rgba(255, 255, 255, 0.06); }
+[data-theme="dark"] .border-gray-200 { border-color: rgba(255, 255, 255, 0.1); }
+[data-theme="dark"] .border-gray-300 { border-color: rgba(255, 255, 255, 0.15); }
+[data-theme="dark"] .border-emerald-200 { border-color: rgba(16, 185, 129, 0.25); }
+[data-theme="dark"] .border-emerald-300 { border-color: rgba(16, 185, 129, 0.35); }
+[data-theme="dark"] .border-green-200 { border-color: rgba(34, 197, 94, 0.25); }
+[data-theme="dark"] .border-green-300 { border-color: rgba(34, 197, 94, 0.35); }
+[data-theme="dark"] .border-red-200 { border-color: rgba(239, 68, 68, 0.25); }
+[data-theme="dark"] .border-red-300 { border-color: rgba(239, 68, 68, 0.35); }
+[data-theme="dark"] .border-amber-200 { border-color: rgba(245, 158, 11, 0.25); }
+[data-theme="dark"] .border-amber-300 { border-color: rgba(245, 158, 11, 0.35); }
+[data-theme="dark"] .border-yellow-200 { border-color: rgba(234, 179, 8, 0.25); }
+[data-theme="dark"] .border-yellow-300 { border-color: rgba(234, 179, 8, 0.35); }
+[data-theme="dark"] .border-blue-200 { border-color: rgba(59, 130, 246, 0.25); }
+[data-theme="dark"] .border-blue-300 { border-color: rgba(59, 130, 246, 0.35); }
+[data-theme="dark"] .border-purple-200 { border-color: rgba(139, 92, 246, 0.25); }
+[data-theme="dark"] .border-purple-300 { border-color: rgba(139, 92, 246, 0.35); }
+[data-theme="dark"] .border-violet-200 { border-color: rgba(124, 58, 237, 0.25); }
+[data-theme="dark"] .border-violet-300 { border-color: rgba(124, 58, 237, 0.35); }
+[data-theme="dark"] .border-indigo-200 { border-color: rgba(99, 102, 241, 0.25); }
+[data-theme="dark"] .border-orange-200 { border-color: rgba(249, 115, 22, 0.25); }
+
+/* --- Missing utility overrides for game components --- */
+[data-theme="dark"] .text-indigo-700,
+[data-theme="dark"] .text-indigo-600 { color: #818cf8; }
+[data-theme="dark"] .text-cyan-700 { color: #22d3ee; }
+[data-theme="dark"] .text-emerald-700 { color: #34d399; }
+[data-theme="dark"] .bg-cyan-50 { background-color: rgba(6, 182, 212, 0.1); }
+[data-theme="dark"] .border-indigo-100 { border-color: rgba(99, 102, 241, 0.15); }
+[data-theme="dark"] .border-cyan-100 { border-color: rgba(6, 182, 212, 0.15); }
+[data-theme="dark"] .border-violet-100 { border-color: rgba(124, 58, 237, 0.15); }
+[data-theme="dark"] .border-emerald-100 { border-color: rgba(16, 185, 129, 0.15); }
+
+/* --- Shadows --- */
+[data-theme="dark"] .shadow-xl { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
+[data-theme="dark"] .shadow-lg { box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35); }
+[data-theme="dark"] .shadow-md { box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3); }
+
+/* --- Divide / Ring --- */
+[data-theme="dark"] .divide-gray-100 > :not(:first-child) { border-color: rgba(255, 255, 255, 0.06); }
+
+/* --- Code/Mono --- */
+[data-theme="dark"] code {
+  color: #e8eaf0;
+  background: rgba(30, 33, 44, 0.6);
+}
+
+html {
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  background: var(--color-bg);
+}
+
+body {
+  font-family: var(--font-body);
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  background: radial-gradient(1200px circle at 15% -10%, rgba(253, 218, 36, 0.2), transparent 65%),
+    radial-gradient(1000px circle at 85% 5%, rgba(183, 172, 232, 0.2), transparent 70%),
+    var(--color-bg);
+  color: var(--color-ink);
+  line-height: 1.6;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+a {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-accent-strong);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-ink);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Base element styles — wrapped in @layer base so Tailwind utilities
+   (bg-*, text-*, border-*) can override them via higher-priority layers.
+   Without this, unlayered CSS beats @layer utilities in the cascade.
+   ════════════════════════════════════════════════════════════════════ */
+@layer base {
+  button {
+    padding: 0.75rem 1.6rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-family: var(--font-body);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: transparent;
+    color: inherit;
+    font-size: 0.875rem;
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-tight);
+  }
+
+  button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--color-ink);
+    box-shadow: 0 0 0 3px rgba(253, 218, 36, 0.35);
+  }
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 1.8rem;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
+}
+
+.notice {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.notice.error {
+  color: var(--color-error);
+}
+
+.notice.success {
+  color: var(--color-success);
+}
+
+.notice.info {
+  color: var(--color-info);
+}
+
+.gradient-text {
+  background: linear-gradient(120deg, var(--color-accent), var(--color-teal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Card Animations (Cangkulan)
+   ════════════════════════════════════════════════════════════════════ */
+
+@keyframes cardDealIn {
+  0% { transform: translateY(-40px) scale(0.6) rotate(-5deg); opacity: 0; }
+  60% { transform: translateY(4px) scale(1.02) rotate(1deg); opacity: 1; }
+  100% { transform: translateY(0) scale(1) rotate(0); opacity: 1; }
+}
+
+@keyframes cardFlipIn {
+  0% { transform: perspective(600px) rotateY(90deg) scale(0.8); opacity: 0; }
+  60% { transform: perspective(600px) rotateY(-5deg) scale(1.02); opacity: 1; }
+  100% { transform: perspective(600px) rotateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes cardPlayOut {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.7) translateY(-30px); opacity: 0; }
+}
+
+@keyframes trickResolve {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.card-deal-anim {
+  animation: cardDealIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.card-flip-anim {
+  animation: cardFlipIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.card-play-anim {
+  animation: cardPlayOut 0.3s ease-in both;
+}
+
+.trick-resolve-anim {
+  animation: trickResolve 0.4s ease-in-out;
+}
+
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.slide-in-up {
+  animation: slideInUp 0.3s ease-out both;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out both;
+}
+
+.card-hover-lift {
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+}
+.card-hover-lift:hover:not(:disabled) {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+/* Stagger delays for card dealing */
+.card-stagger-0 { animation-delay: 0ms; }
+.card-stagger-1 { animation-delay: 60ms; }
+.card-stagger-2 { animation-delay: 120ms; }
+.card-stagger-3 { animation-delay: 180ms; }
+.card-stagger-4 { animation-delay: 240ms; }
+.card-stagger-5 { animation-delay: 300ms; }
+.card-stagger-6 { animation-delay: 360ms; }
+.card-stagger-7 { animation-delay: 420ms; }
+.card-stagger-8 { animation-delay: 480ms; }
+.card-stagger-9 { animation-delay: 540ms; }
+
+/* ════════════════════════════════════════════════════════════════════
+   Card 3D Flip Animation
+   ════════════════════════════════════════════════════════════════════ */
+
+.card-3d-flip {
+  perspective: 800px;
+}
+.card-3d-flip-inner {
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-style: preserve-3d;
+}
+.card-3d-flip-inner.flipped {
+  transform: rotateY(180deg);
+}
+.card-3d-flip-front,
+.card-3d-flip-back {
+  backface-visibility: hidden;
+  position: absolute;
+  inset: 0;
+}
+.card-3d-flip-back {
+  transform: rotateY(180deg);
+}
+
+@keyframes cardReveal3D {
+  0%   { transform: perspective(800px) rotateY(180deg) scale(0.9); opacity: 0.6; }
+  40%  { transform: perspective(800px) rotateY(90deg) scale(1.05); opacity: 0.8; }
+  70%  { transform: perspective(800px) rotateY(-10deg) scale(1.08); opacity: 1; }
+  100% { transform: perspective(800px) rotateY(0deg) scale(1); opacity: 1; }
+}
+.card-reveal-3d-anim {
+  animation: cardReveal3D 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Card shimmer effect on reveal */
+@keyframes cardShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.card-shimmer {
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.4) 45%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.4) 55%,
+    transparent 80%
+  );
+  background-size: 200% 100%;
+  animation: cardShimmer 0.8s ease-in-out;
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+/* Card win highlight */
+@keyframes cardWinPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.6); }
+  50%      { box-shadow: 0 0 20px 6px rgba(234, 179, 8, 0.3); }
+}
+.card-win-glow {
+  animation: cardWinPulse 1.5s ease-in-out infinite;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Turn Indicator Glow
+   ════════════════════════════════════════════════════════════════════ */
+
+@keyframes turnGlowGreen {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5), 0 0 12px 2px rgba(16, 185, 129, 0.15); }
+  50%      { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0), 0 0 20px 4px rgba(16, 185, 129, 0.25); }
+}
+@keyframes turnGlowAmber {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5), 0 0 12px 2px rgba(245, 158, 11, 0.15); }
+  50%      { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0), 0 0 20px 4px rgba(245, 158, 11, 0.25); }
+}
+
+.turn-glow-your-turn {
+  animation: turnGlowGreen 2s ease-in-out infinite;
+  border-color: rgb(16, 185, 129) !important;
+}
+.turn-glow-waiting {
+  animation: turnGlowAmber 2.5s ease-in-out infinite;
+  border-color: rgb(245, 158, 11) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Toast Animations
+   ════════════════════════════════════════════════════════════════════ */
+
+@keyframes toastSlideIn {
+  from { transform: translateX(100%) scale(0.95); opacity: 0; }
+  to   { transform: translateX(0) scale(1); opacity: 1; }
+}
+@keyframes toastSlideOut {
+  from { transform: translateX(0) scale(1); opacity: 1; }
+  to   { transform: translateX(100%) scale(0.95); opacity: 0; }
+}
+
+@keyframes scorePopUp {
+  0%   { transform: translateY(0) scale(0.5); opacity: 1; }
+  100% { transform: translateY(-18px) scale(1.2); opacity: 0; }
+}
+
+@keyframes scoreFlash {
+  0%   { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* Homepage floating card suits */
+@keyframes float-card {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+  50%      { transform: translateY(-12px) rotate(calc(var(--rot, 0deg) + 5deg)); }
+}
+
+/* Hide scrollbar for tech badge strip */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Marquee — infinite horizontal ticker */
+.marquee-container { position: relative; }
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 30s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.toast-enter {
+  animation: toastSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.toast-exit {
+  animation: toastSlideOut 0.3s ease-in both;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Copyable Session ID
+   ════════════════════════════════════════════════════════════════════ */
+
+.session-id-copy {
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  border-radius: 6px;
+  padding: 1px 6px;
+  margin: -1px -6px;
+}
+.session-id-copy:hover {
+  background: rgba(16, 185, 129, 0.1);
+  color: rgb(5, 150, 105);
+}
+.session-id-copy:active {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Mobile Responsive — Cards, Game Layout
+   ════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  /* Reduce game container padding on mobile */
+  .bg-white\/70 {
+    padding: 1rem !important;
+  }
+
+  /* Stack game info bar on mobile */
+  .flex.flex-wrap.items-center.justify-between {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  /* Ensure buttons are comfortably tappable (≥44px) */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Smaller card sizing override for mobile */
+  .w-\[4\.2rem\] {
+    width: 2.75rem;
+  }
+  .h-\[6rem\] {
+    height: 4rem;
+  }
+  .w-12 {
+    width: 2.5rem;
+  }
+  .h-\[4\.2rem\] {
+    height: 3.25rem;
+  }
+
+  /* Tighter card gaps on mobile */
+  .flex.flex-wrap.gap-2 {
+    gap: 0.35rem;
+  }
+
+  /* Reduce heading sizes */
+  .text-3xl {
+    font-size: 1.5rem;
+  }
+  .text-2xl {
+    font-size: 1.25rem;
+  }
+  .text-7xl {
+    font-size: 3rem;
+  }
+
+  /* Reduce modal/card padding */
+  .p-10 {
+    padding: 1.5rem;
+  }
+  .p-6 {
+    padding: 1rem;
+  }
+  .p-5 {
+    padding: 0.875rem;
+  }
+}
+
+@media (max-width: 400px) {
+  /* Very small screens — even more compact */
+  .text-3xl {
+    font-size: 1.25rem;
+  }
+
+  .w-\[4\.2rem\] {
+    width: 2.25rem;
+  }
+  .h-\[6rem\] {
+    height: 3.25rem;
+  }
+}
