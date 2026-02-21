@@ -294,13 +294,17 @@ function tryMatch(ws: WS): boolean {
     cInfo.status = 'in-game';
 
     const matchId = `match-${Date.now()}`;
+    const sessionIdBuf = new Uint32Array(1);
+    crypto.getRandomValues(sessionIdBuf);
+    const sessionId = sessionIdBuf[0] || Date.now();
+
     send(ws, {
       type: 'match-found',
-      payload: { matchId, opponent: cInfo.address, role: 'player1' },
+      payload: { matchId, sessionId, opponent: cInfo.address, role: 'player1' },
     });
     send(candidate, {
       type: 'match-found',
-      payload: { matchId, opponent: info.address, role: 'player2' },
+      payload: { matchId, sessionId, opponent: info.address, role: 'player2' },
     });
 
     broadcastPresence();
@@ -406,7 +410,7 @@ const server = Bun.serve<WsData>({
                 send(existingWs, { type: 'kicked', payload: { reason: 'duplicate' } });
                 clients.delete(existingWs);
                 removeFromQueue(existingWs);
-                try { existingWs.close(); } catch {}
+                try { existingWs.close(); } catch { }
               }
             }
 
@@ -588,6 +592,7 @@ const server = Bun.serve<WsData>({
 
             rooms.set(roomId, room);
             crInfo.status = 'in-game';
+            removeFromQueue(ws); // Ensure they leave matchmaking queue
 
             send(ws, { type: 'room-created', payload: { room: roomToClient(room) } });
             broadcastRoomList();
@@ -605,7 +610,7 @@ const server = Bun.serve<WsData>({
             const targetCode = msg.payload?.inviteCode;
 
             let room: Room | undefined;
-            
+
             if (targetRoomId) {
               room = rooms.get(targetRoomId);
             } else if (targetCode) {
@@ -635,18 +640,20 @@ const server = Bun.serve<WsData>({
             room.guestWs = ws;
             room.status = 'starting';
             jrInfo.status = 'in-game';
+            removeFromQueue(ws); // Ensure guest leaves matchmaking queue
 
             // Notify room members
             broadcastToRoom(room, { type: 'room-updated', payload: { room: roomToClient(room) } });
-            
+
             // Auto-start game after brief delay
             setTimeout(() => {
-              if (room && room.status === 'starting') {
-                room.status = 'playing';
-                broadcastToRoom(room, { type: 'room-game-start', payload: { roomId: room.id, sessionId: room.sessionId } });
-                broadcastToRoom(room, { type: 'room-updated', payload: { room: roomToClient(room) } });
+              const currentRoom = rooms.get(room!.id);
+              if (currentRoom && currentRoom.status === 'starting' && currentRoom.guestWs) {
+                currentRoom.status = 'playing';
+                broadcastToRoom(currentRoom, { type: 'room-game-start', payload: { roomId: currentRoom.id, sessionId: currentRoom.sessionId } });
+                broadcastToRoom(currentRoom, { type: 'room-updated', payload: { room: roomToClient(currentRoom) } });
               }
-            }, 1500);
+            }, 1000); // Reduced to 1s for better snappiness
 
             broadcastRoomList();
             broadcastPresence();
@@ -685,6 +692,10 @@ const server = Bun.serve<WsData>({
               room.guest = null;
               room.guestWs = null;
               room.status = 'waiting';
+
+              // Host is still in room but room is now waiting, 
+              // we keep host in 'in-game' status as they are tied to a room.
+
               broadcastToRoom(room, { type: 'room-updated', payload: { room: roomToClient(room) } });
             } else {
               const specIdx = room.spectatorWs.indexOf(ws);

@@ -37,7 +37,7 @@ function pedersenH() { return bls12_381.G1.hashToCurve(new TextEncoder().encode(
 function buildPedersenProof(seedHash: Buffer, blinding: Uint8Array, sessionId: number, playerAddress: string) {
   const s = bufferToFr(seedHash); const r = bufferToFr(blinding);
   const G = bls12_381.G1.Point.BASE; const H = pedersenH();
-  const cBytes = g1ToBytes96(G.multiply(s).add(H.multiply(r)));
+  const cBytes = g1ToBytes96(G.multiply(s).add(H.multiply(r) as any));
   const kRaw = generateRandomBytes(32); const k = bufferToFr(kRaw);
   const rBytes = g1ToBytes96(H.multiply(k));
   const addressBytes = new TextEncoder().encode(playerAddress);
@@ -139,7 +139,7 @@ async function playSingleBattle(p1: Keypair, p2: Keypair, sid: number) {
 }
 
 function computeCParams(s: Uint8Array, b: Uint8Array) {
-  return Buffer.from(keccak256(g1ToBytes96(bls12_381.G1.Point.BASE.multiply(bufferToFr(keccak(s))).add(pedersenH().multiply(bufferToFr(b))))), 'hex');
+  return Buffer.from(keccak256(g1ToBytes96(bls12_381.G1.Point.BASE.multiply(bufferToFr(keccak(s))).add(pedersenH().multiply(bufferToFr(b)) as any))), 'hex');
 }
 function chooseCard(hand: number[], s: number) {
   const m = hand.filter(c => Math.floor(c / 9) === s);
@@ -188,7 +188,7 @@ async function main() {
         log(`${c.red}[WS] error parsing message: ${err}${c.reset}`);
       }
     };
-    ws.onerror = (e) => log(`${c.red}[WS] error: ${e.message}${c.reset}`);
+    ws.onerror = (e: any) => log(`${c.red}[WS] error: ${e.message || 'connection failed'}${c.reset}`);
     wsConns.set(pub, ws);
   }
 

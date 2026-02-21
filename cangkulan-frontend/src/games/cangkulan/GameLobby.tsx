@@ -177,8 +177,13 @@ async function fetchRecentGames(): Promise<LobbyGame[]> {
           for (const entry of map) {
             const rawKey = entry.key().value();
             const key = rawKey instanceof Uint8Array ? new TextDecoder().decode(rawKey) : String(rawKey);
-            if (key === 'session_id') sessionId = entry.val().value() as number;
-            else if (key === 'outcome') outcome = entry.val().value() as number;
+            if (key === 'session_id') {
+              const val = entry.val().value();
+              sessionId = typeof val === 'bigint' ? Number(val) : Number(val);
+            } else if (key === 'outcome') {
+              const val = entry.val().value();
+              outcome = typeof val === 'bigint' ? Number(val) : Number(val);
+            }
           }
           if (sessionId > 0) {
             endMap.set(sessionId, {
@@ -209,7 +214,8 @@ async function fetchRecentGames(): Promise<LobbyGame[]> {
             const rawKey = entry.key().value();
             const key = rawKey instanceof Uint8Array ? new TextDecoder().decode(rawKey) : String(rawKey);
             if (key === 'session_id') {
-              sessionId = entry.val().value() as number;
+              const val = entry.val().value();
+              sessionId = typeof val === 'bigint' ? Number(val) : Number(val);
             } else if (key === 'player1') {
               player1 = Address.fromScVal(entry.val()).toString();
             } else if (key === 'player2') {
@@ -287,8 +293,6 @@ async function enrichGameStatuses(games: LobbyGame[]): Promise<LobbyGame[]> {
           // For finished games, add outcome & winner info
           if (status === 'finished' && state.outcome) {
             enrichedGame.outcome = state.outcome;
-            // Estimate end time: if createdAt is available, use it as base
-            // Since we don't have exact end time, approximate from current time
             enrichedGame.endedAt = enrichedGame.endedAt ?? Date.now();
             if (state.outcome === OUTCOME.PLAYER1_WIN) {
               enrichedGame.winner = state.player1;
@@ -303,8 +307,16 @@ async function enrichGameStatuses(games: LobbyGame[]): Promise<LobbyGame[]> {
           }
           return enrichedGame;
         }
+
+        // If state is null, check if this is a very recent game (grace period for RPC lag)
+        const isVeryRecent = game.createdAt && (Date.now() - game.createdAt < 60000);
+        if (isVeryRecent) {
+          return { ...game, status: 'unknown' as const };
+        }
+
         return { ...game, status: 'finished' as const };
-      } catch {
+      } catch (err) {
+        log.warn(`[Lobby] Enrichment failed for session ${game.sessionId}:`, err);
         return game;
       }
     }),
@@ -439,7 +451,7 @@ export function GameLobby({ userAddress, navigate }: GameLobbyProps) {
             <div className="flex gap-2">
               <button
                 onClick={() => {
-                  navigate({ page: 'game' });
+                  navigate({ page: 'game', sessionId: lobby.matchFound!.sessionId });
                   lobby.clearMatch();
                 }}
                 className="px-4 py-2 text-sm font-bold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors"
@@ -471,7 +483,11 @@ export function GameLobby({ userAddress, navigate }: GameLobbyProps) {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => lobby.acceptInvite(lobby.pendingInvite!.from)}
+                onClick={() => {
+                  const sid = lobby.pendingInvite?.sessionId;
+                  lobby.acceptInvite(lobby.pendingInvite!.from, sid);
+                  navigate({ page: 'game', sessionId: sid });
+                }}
                 className="px-4 py-2 text-sm font-bold rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
               >
                 <FormattedMessage id="lobby.ws.accept" defaultMessage="Accept" />
@@ -537,7 +553,11 @@ export function GameLobby({ userAddress, navigate }: GameLobbyProps) {
                   </span>
                   {player.status === 'idle' && (
                     <button
-                      onClick={() => lobby.invite(player.address)}
+                      onClick={() => {
+                        const sid = Math.floor(Math.random() * 1000000);
+                        lobby.invite(player.address, sid);
+                        navigate({ page: 'game', sessionId: sid });
+                      }}
                       className="px-2 py-0.5 text-[10px] font-bold rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors shrink-0"
                       title={intl.formatMessage({ id: 'lobby.ws.inviteToPlay', defaultMessage: 'Invite to play' })}
                     >

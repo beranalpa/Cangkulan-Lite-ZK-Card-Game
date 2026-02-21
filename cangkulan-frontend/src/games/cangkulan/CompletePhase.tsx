@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import type { GameState, TrickRecord, ProofMode } from './types';
 import { OUTCOME, POINTS_DECIMALS } from './types';
 import { cardSuit, cardLabel } from './cardHelpers';
-import { CANGKULAN_CONTRACT } from '@/utils/constants';
+import { CANGKULAN_CONTRACT, GAME_HUB_CONTRACT } from '@/utils/constants';
 import { CanvasConfetti, CardSweepOverlay } from './CanvasConfetti';
 import { GameReplay } from './GameReplay';
 import { FadeIn } from './cardAnimations';
@@ -66,7 +66,7 @@ export function CompletePhase({
       animationDuration: `${2 + Math.random() * 2}s`,
       backgroundColor: ['#fdda24', '#00a7b5', '#b7ace8', '#ff6b6b', '#4ecdc4', '#ffe66d'][i % 6],
     })),
-  []);
+    []);
 
   const isWinner =
     (gameState.outcome === OUTCOME.PLAYER1_WIN && isPlayer1)
@@ -84,58 +84,63 @@ export function CompletePhase({
       <CardSweepOverlay active={isWinner} />
 
       <FadeIn delay={0.1}>
-      <div className="p-5 sm:p-10 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 rounded-2xl text-center shadow-2xl" role="status" aria-live="polite" aria-atomic="true">
-        <div className="text-5xl sm:text-7xl mb-4 sm:mb-6" aria-hidden="true" style={{
-          animation: isWinner ? 'trophy-bounce 0.6s ease-out' : undefined,
-        }}>🏆</div>
-        <style>{`
+        <div className="p-5 sm:p-10 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 rounded-2xl text-center shadow-2xl" role="status" aria-live="polite" aria-atomic="true">
+          <div className="text-5xl sm:text-7xl mb-4 sm:mb-6" aria-hidden="true" style={{
+            animation: isWinner ? 'trophy-bounce 0.6s ease-out' : undefined,
+          }}>🏆</div>
+          <style>{`
           @keyframes trophy-bounce {
             0% { transform: scale(0) rotate(-15deg); }
             50% { transform: scale(1.3) rotate(5deg); }
             100% { transform: scale(1) rotate(0deg); }
           }
         `}</style>
-        <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">Game Complete!</h3>
-        <div className="text-xl sm:text-2xl font-bold text-green-700 mb-2">
-          {outcomeLabel(gameState.outcome, gameState.player1, gameState.player2, userAddress)}
-        </div>
-        {tiebreakerNote(gameState) && (
-          <p className="text-sm text-gray-500 mb-6">{tiebreakerNote(gameState)}</p>
-        )}
-        {!tiebreakerNote(gameState) && <div className="mb-6" />}
-
-        {/* Player Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <div className="p-4 bg-white/70 border border-green-200 rounded-xl">
-            <p className="text-xs font-bold uppercase tracking-wide text-gray-600 mb-1">Player 1</p>
-            <p className="font-mono text-xs text-gray-700 mb-2">{gameState.player1.slice(0, 8)}...{gameState.player1.slice(-4)}</p>
-            <p className="text-sm font-semibold text-gray-800">
-              Cards left: {gameState.hand1.length} | Tricks won: {gameState.tricks_won1}
-            </p>
-            <p className="text-xs text-gray-600">Points: {(Number(gameState.player1_points) / 10 ** POINTS_DECIMALS).toFixed(2)}</p>
+          <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">Game Complete!</h3>
+          <div className="text-xl sm:text-2xl font-bold text-green-700 mb-2">
+            {outcomeLabel(gameState.outcome, gameState.player1, gameState.player2, userAddress)}
           </div>
-          <div className="p-4 bg-white/70 border border-green-200 rounded-xl">
-            <p className="text-xs font-bold uppercase tracking-wide text-gray-600 mb-1">Player 2</p>
-            <p className="font-mono text-xs text-gray-700 mb-2">{gameState.player2.slice(0, 8)}...{gameState.player2.slice(-4)}</p>
-            <p className="text-sm font-semibold text-gray-800">
-              Cards left: {gameState.hand2.length} | Tricks won: {gameState.tricks_won2}
-            </p>
-            <p className="text-xs text-gray-600">Points: {(Number(gameState.player2_points) / 10 ** POINTS_DECIMALS).toFixed(2)}</p>
+          {tiebreakerNote(gameState) && (
+            <p className="text-sm text-gray-500 mb-6">{tiebreakerNote(gameState)}</p>
+          )}
+          {!tiebreakerNote(gameState) && <div className="mb-6" />}
+
+          {/* Player Stats */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div className="p-4 bg-white/70 border border-green-200 rounded-xl">
+              <p className="text-xs font-bold uppercase tracking-wide text-gray-600 mb-1">Player 1</p>
+              <p className="font-mono text-xs text-gray-700 mb-2">{gameState.player1.slice(0, 8)}...{gameState.player1.slice(-4)}</p>
+              <p className="text-sm font-semibold text-gray-800">
+                Cards left: {gameState.hand1.length} | Tricks won: {gameState.tricks_won1}
+              </p>
+              <p className="text-xs text-gray-600">Points: {(Number(gameState.player1_points) / 10 ** POINTS_DECIMALS).toFixed(2)}</p>
+            </div>
+            <div className="p-4 bg-white/70 border border-green-200 rounded-xl">
+              <p className="text-xs font-bold uppercase tracking-wide text-gray-600 mb-1">Player 2</p>
+              <p className="font-mono text-xs text-gray-700 mb-2">{gameState.player2.slice(0, 8)}...{gameState.player2.slice(-4)}</p>
+              <p className="text-sm font-semibold text-gray-800">
+                Cards left: {gameState.hand2.length} | Tricks won: {gameState.tricks_won2}
+              </p>
+              <p className="text-xs text-gray-600">Points: {(Number(gameState.player2_points) / 10 ** POINTS_DECIMALS).toFixed(2)}</p>
+            </div>
+          </div>
+
+          {/* Verify & Explore Links */}
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
+            <a href={`https://stellar.expert/explorer/testnet/contract/${CANGKULAN_CONTRACT}?filter=events`}
+              target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 no-underline font-semibold transition-colors">
+              🔗 Game Contract Events ↗
+            </a>
+            <a href={`https://stellar.expert/explorer/testnet/contract/${GAME_HUB_CONTRACT}?filter=events`}
+              target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 no-underline font-semibold transition-colors">
+              🏆 Winner Proof (Game Hub) ↗
+            </a>
+            <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 font-mono">
+              Session #{sessionId}
+            </span>
           </div>
         </div>
-
-        {/* Verify & Explore Links */}
-        <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
-          <a href={`https://stellar.expert/explorer/testnet/contract/${CANGKULAN_CONTRACT}`}
-            target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 no-underline font-semibold transition-colors">
-            🔗 View Contract on Stellar Expert ↗
-          </a>
-          <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 font-mono">
-            Session #{sessionId}
-          </span>
-        </div>
-      </div>
       </FadeIn>
 
       {/* Shuffle Verification */}
@@ -203,9 +208,8 @@ export function CompletePhase({
             {trickHistory.map((trick) => (
               <div key={trick.trickNumber} className="flex items-center gap-3 text-xs py-1.5 px-2 rounded-lg bg-white/60 border border-amber-100">
                 <span className="font-bold text-gray-500 w-8">#{trick.trickNumber}</span>
-                <span className={`font-bold ${
-                  trick.winner === 'p1' ? 'text-blue-600' : trick.winner === 'p2' ? 'text-purple-600' : 'text-gray-400'
-                }`}>
+                <span className={`font-bold ${trick.winner === 'p1' ? 'text-blue-600' : trick.winner === 'p2' ? 'text-purple-600' : 'text-gray-400'
+                  }`}>
                   {trick.winner === 'p1' ? '🟦 P1 wins' : trick.winner === 'p2' ? '🟪 P2 wins' : '⬜ Waste'}
                 </span>
                 <span className="text-gray-400 ml-auto flex items-center gap-1.5">

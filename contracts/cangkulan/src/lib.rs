@@ -111,6 +111,19 @@ pub struct EvGameEnded {
     pub outcome: u32,
 }
 
+#[contractevent]
+pub struct EvHubStartReported {
+    pub session_id: u32,
+    pub hub: Address,
+}
+
+#[contractevent]
+pub struct EvHubEndReported {
+    pub session_id: u32,
+    pub hub: Address,
+    pub player1_won: bool,
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 //  External trait interfaces
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -414,6 +427,11 @@ impl CangkulanContract {
             &player1_points,
             &player2_points,
         );
+
+        EvHubStartReported {
+            session_id,
+            hub: hub_addr,
+        }.publish(&env);
 
         let game = CangkulanGame {
             player1,
@@ -1472,6 +1490,12 @@ impl CangkulanContract {
 
         // Game Hub lifecycle: end_game BEFORE finalizing state.
         hub.end_game(&session_id, &player1_won);
+
+        EvHubEndReported {
+            session_id,
+            hub: hub_addr,
+            player1_won,
+        }.publish(&env);
 
         EvGameEnded {
             session_id,

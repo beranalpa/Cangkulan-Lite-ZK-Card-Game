@@ -53,10 +53,11 @@ export function SpectatorView({ sessionId, onExit }: SpectatorViewProps) {
         setGameState(game);
         setError(null);
       } else {
-        setError('Game not found. Check the session ID.');
+        // Contract returned null/GameNotFound
+        setError(`Game #${sessionId} not found on-chain. It may have expired, ended, or the Session ID is incorrect.`);
       }
-    } catch {
-      setError('Failed to load game state.');
+    } catch (err) {
+      setError(`Failed to load game state: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   }, [sessionId]);
 
@@ -190,21 +191,19 @@ export function SpectatorView({ sessionId, onExit }: SpectatorViewProps) {
             {gameState.lifecycle_state === LIFECYCLE.SEED_COMMIT ? '🎲 Seed Commitment' : '🔓 Seed Reveal'}
           </p>
           <div className="flex justify-center gap-4">
-            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-              gameState.seed_commit1 != null
+            <span className={`px-3 py-1 rounded-full text-xs font-bold ${gameState.seed_commit1 != null
                 ? 'bg-green-100 text-green-700'
                 : 'bg-gray-100 text-gray-500'
-            }`}>
+              }`}>
               P1: {gameState.lifecycle_state === LIFECYCLE.SEED_REVEAL
                 ? (gameState.seed_revealed1 ? '✓ Revealed' : '🔒 Locked')
                 : (gameState.seed_commit1 != null ? '✓ Committed' : 'Waiting')
               }
             </span>
-            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-              gameState.seed_commit2 != null
+            <span className={`px-3 py-1 rounded-full text-xs font-bold ${gameState.seed_commit2 != null
                 ? 'bg-green-100 text-green-700'
                 : 'bg-gray-100 text-gray-500'
-            }`}>
+              }`}>
               P2: {gameState.lifecycle_state === LIFECYCLE.SEED_REVEAL
                 ? (gameState.seed_revealed2 ? '✓ Revealed' : '🔒 Locked')
                 : (gameState.seed_commit2 != null ? '✓ Committed' : 'Waiting')
@@ -251,10 +250,10 @@ export function SpectatorView({ sessionId, onExit }: SpectatorViewProps) {
             {gameState.outcome === OUTCOME.PLAYER1_WIN
               ? `Player 1 Wins!`
               : gameState.outcome === OUTCOME.PLAYER2_WIN
-              ? `Player 2 Wins!`
-              : gameState.outcome === OUTCOME.DRAW
-              ? 'Draw!'
-              : 'Unresolved'}
+                ? `Player 2 Wins!`
+                : gameState.outcome === OUTCOME.DRAW
+                  ? 'Draw!'
+                  : 'Unresolved'}
           </p>
           <div className="flex justify-center gap-6 mt-3 text-sm text-gray-600">
             <span>P1: {gameState.tricks_won1} tricks</span>

@@ -36,8 +36,8 @@ export interface UseLobbyPresenceReturn {
 
   // Invites
   pendingInvite: InviteReceived | null;
-  invite: (target: string) => void;
-  acceptInvite: (from: string) => void;
+  invite: (target: string, sessionId?: number) => void;
+  acceptInvite: (from: string, sessionId?: number) => void;
   dismissInvite: () => void;
 
   // Chat
@@ -119,12 +119,12 @@ export function useLobbyPresence(userAddress: string | null): UseLobbyPresenceRe
     setMatchFound(null);
   }, []);
 
-  const invite = useCallback((target: string) => {
-    getLobbySocket().invite(target);
+  const invite = useCallback((target: string, sessionId?: number) => {
+    getLobbySocket().invite(target, sessionId);
   }, []);
 
-  const acceptInvite = useCallback((from: string) => {
-    getLobbySocket().acceptInvite(from);
+  const acceptInvite = useCallback((from: string, sessionId?: number) => {
+    getLobbySocket().acceptInvite(from, sessionId);
     setPendingInvite(null);
   }, []);
 

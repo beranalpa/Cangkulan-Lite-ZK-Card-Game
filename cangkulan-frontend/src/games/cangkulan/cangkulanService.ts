@@ -87,11 +87,18 @@ export class CangkulanService {
       if (result.result.isOk()) {
         return result.result.unwrap();
       } else {
-        log.debug('[getGame] Game not found for session:', sessionId);
+        // Distinguish between actual "not found" vs other simulation errors
+        const errStr = String(result.result.unwrapErr());
+        if (errStr.includes('HostError') || errStr.includes('1')) { // 1 = GameNotFound error code
+          log.debug(`[getGame] Game #${sessionId} not found in contract storage (may have expired or never existed)`);
+        } else {
+          log.warn(`[getGame] Simulation failed for #${sessionId}:`, errStr);
+        }
         return null;
       }
     } catch (err) {
-      log.debug('[getGame] Error querying game:', err);
+      log.error(`[getGame] RPC Exception for #${sessionId}:`, err);
+      // Return undefined or rethrow? For now return null but log as error
       return null;
     }
   }
@@ -99,8 +106,6 @@ export class CangkulanService {
   /**
    * Privacy-aware game query: only the viewer's own hand is visible.
    * The opponent's hand is redacted to prevent card snooping.
-   * Does NOT fall back to getGame — if the view query fails, it returns null
-   * to prevent accidental leakage of the full game state.
    */
   async getGameView(sessionId: number, viewer: string): Promise<CangkulanGame | null> {
     try {
@@ -109,10 +114,11 @@ export class CangkulanService {
       if (result.result.isOk()) {
         return result.result.unwrap();
       }
-      log.warn('[getGameView] Result not OK — returning null (no fallback to getGame for privacy)');
+      const errStr = String(result.result.unwrapErr());
+      log.warn(`[getGameView] Simulation Error for Game #${sessionId}, Viewer ${viewer}:`, errStr);
       return null;
     } catch (err) {
-      log.warn('[getGameView] Error:', err);
+      log.error(`[getGameView] RPC Exception for Game #${sessionId}:`, err);
       return null;
     }
   }
@@ -181,7 +187,7 @@ export class CangkulanService {
     log.debug('[prepareStartGame] session:', sessionId, 'p1:', player1, 'p2 (sim):', player2);
 
     const buildClient = new CangkulanClient({
-      contractId: this.contractId,
+      contractId: this.contractId, // Cangkulan contract (requires multi-sig)
       networkPassphrase: this.networkPassphrase,
       rpcUrl: this.rpcUrl,
       publicKey: player2,
@@ -326,7 +332,7 @@ export class CangkulanService {
     const gameParams = this.parseAuthEntry(player1SignedAuthEntryXdr);
     if (player2Address === gameParams.player1) throw new Error('Cannot play against yourself.');
     const buildClient = new CangkulanClient({
-      contractId: this.contractId,
+      contractId: this.contractId, // Cangkulan contract (requires multi-sig)
       networkPassphrase: this.networkPassphrase,
       rpcUrl: this.rpcUrl,
       publicKey: player2Address,
@@ -413,7 +419,12 @@ export class CangkulanService {
   ): Promise<TxResult<any>> {
     // Build transaction with Player 2 as source (invoker — authorized by
     // the envelope signature, no separate auth entry needed).
-    const client = this.createSigningClient(player2, player2Signer);
+    const client = new CangkulanClient({
+      contractId: this.contractId, // Cangkulan contract (requires multi-sig)
+      networkPassphrase: this.networkPassphrase,
+      rpcUrl: this.rpcUrl,
+      publicKey: player2,
+    });
     const tx = await client.start_game({
       session_id: sessionId, player1, player2,
       player1_points: player1Points, player2_points: player2Points,

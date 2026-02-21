@@ -81,7 +81,7 @@ const _bindingsCangkulanId = cangkulanNetworks.testnet.contractId;
 // Contract IDs
 export const MOCK_GAME_HUB_CONTRACT = getContractId('mock-game-hub');
 export const CANGKULAN_CONTRACT = getContractId('cangkulan') || _bindingsCangkulanId;
-export const ZK_VERIFIER_CONTRACT = getContractId('zk-verifier') || 'CBVCH6NE2SVE57JEL6QT4VRIQH5ESBRMMYCO3WMYBUWRPHSAEL5VW5PX';
+export const ZK_VERIFIER_CONTRACT = getContractId('zk-verifier') || 'CBOIHT66ZGS27774KVO6CYFQ46VYG2SCKCQBG2LUO6JYRZGKHD3XBRMW';
 export const GAME_HUB_CONTRACT = getContractId('mock-game-hub') || 'CB4VZAT2U3UC6XFK3N23SKRF2NDCMP3QHJYMCHHFMZO7MRQO6DQ2EMYG';
 export const STELLAR_EXPERT_BASE = 'https://stellar.expert/explorer/testnet/contract';
 

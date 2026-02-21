@@ -31,6 +31,7 @@ export interface ChatMessage {
 
 export interface MatchFound {
   matchId: string;
+  sessionId: number;
   opponent: string;
   role: 'player1' | 'player2';
 }
@@ -144,7 +145,7 @@ export class LobbySocketService {
     this.stopHeartbeat();
     this.stopReconnect();
     if (this.ws) {
-      try { this.ws.close(1000, 'user-disconnect'); } catch {}
+      try { this.ws.close(1000, 'user-disconnect'); } catch { }
       this.ws = null;
     }
     this._connected = false;
