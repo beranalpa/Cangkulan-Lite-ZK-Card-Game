@@ -25,9 +25,9 @@ Cangkulan Lite is a two-player Indonesian trick-taking card game built on Stella
 
 ## Demo
 
-**Video:** [Watch on YouTube](https://www.youtube.com/watch?v=YBidqWeHZF4)
+**Video:** [Watch on YouTube](https://www.youtube.com/watch?v=uw2E2C23d48)
 
-[![Cangkulan Lite Demo](https://img.youtube.com/vi/YBidqWeHZF4/maxresdefault.jpg)](https://www.youtube.com/watch?v=YBidqWeHZF4)
+[![Cangkulan Lite Demo](https://img.youtube.com/vi/uw2E2C23d48/maxresdefault.jpg)](https://www.youtube.com/watch?v=uw2E2C23d48)
 
 **Live Game:** [https://cangkulan.hoshiyomi.my.id](https://cangkulan.hoshiyomi.my.id)
 
