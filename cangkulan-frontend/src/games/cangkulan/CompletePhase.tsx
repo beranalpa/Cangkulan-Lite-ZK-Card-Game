@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import type { GameState, TrickRecord, ProofMode } from './types';
 import { OUTCOME, POINTS_DECIMALS } from './types';
 import { cardSuit, cardLabel } from './cardHelpers';
-import { CANGKULAN_CONTRACT, GAME_HUB_CONTRACT } from '@/utils/constants';
+import { getActiveCangkulanContract, getActiveGameHubContract, getStellarExpertLink } from '@/utils/constants';
 import { CanvasConfetti, CardSweepOverlay } from './CanvasConfetti';
 import { GameReplay } from './GameReplay';
 import { FadeIn } from './cardAnimations';
@@ -126,16 +126,20 @@ export function CompletePhase({
 
           {/* Verify & Explore Links */}
           <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
-            <a href={`https://stellar.expert/explorer/testnet/contract/${CANGKULAN_CONTRACT}?filter=events`}
-              target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 no-underline font-semibold transition-colors">
-              🔗 Game Contract Events ↗
-            </a>
-            <a href={`https://stellar.expert/explorer/testnet/contract/${GAME_HUB_CONTRACT}?filter=events`}
-              target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 no-underline font-semibold transition-colors">
-              🏆 Winner Proof (Game Hub) ↗
-            </a>
+            {getStellarExpertLink('contract', getActiveCangkulanContract()) && (
+              <a href={`${getStellarExpertLink('contract', getActiveCangkulanContract())}?filter=events`}
+                target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 no-underline font-semibold transition-colors">
+                🔗 Game Contract Events ↗
+              </a>
+            )}
+            {getStellarExpertLink('contract', getActiveGameHubContract()) && (
+              <a href={`${getStellarExpertLink('contract', getActiveGameHubContract())}?filter=events`}
+                target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 no-underline font-semibold transition-colors">
+                🏆 Winner Proof (Game Hub) ↗
+              </a>
+            )}
             <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 font-mono">
               Session #{sessionId}
             </span>

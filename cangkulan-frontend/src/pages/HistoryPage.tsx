@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { CangkulanService } from '@/games/cangkulan/cangkulanService';
-import { CANGKULAN_CONTRACT } from '@/utils/constants';
+import { getActiveCangkulanContract, getStellarExpertLink } from '@/utils/constants';
+import { useNetworkStore } from '@/store/networkStore';
 import { useWallet } from '@/hooks/useWallet';
 import { ConnectionModal } from '@/components/ConnectionScreen';
 import type { GameSummary } from '@/games/cangkulan/bindings';
@@ -18,7 +19,6 @@ import { PageHero } from '@/components/PageHero';
    Data is stored on-chain for 120 days per player, max 50 games.
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-const cangkulanService = new CangkulanService(CANGKULAN_CONTRACT);
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -77,9 +77,12 @@ function WalletRequiredPrompt({ title, description }: { title: string; descripti
   );
 }
 
-export function HistoryPage({ navigate }: HistoryPageProps) {
-  const { publicKey } = useWallet();
-  const [history, setHistory] = useState<GameSummary[]>([]);
+export function HistoryPage({ navigate }: { navigate: (route: AppRoute) => void }) {
+  const { publicKey, isConnected } = useWallet();
+  const activeNetwork = useNetworkStore(s => s.activeNetwork);
+  const cangkulanService = useMemo(() => new CangkulanService(getActiveCangkulanContract()), [activeNetwork]);
+
+  const [games, setGames] = useState<GameSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentLedger, setCurrentLedger] = useState(0);
@@ -99,32 +102,32 @@ export function HistoryPage({ navigate }: HistoryPageProps) {
       const latest = await server.getLatestLedger();
       setCurrentLedger(latest.sequence);
 
-      const games = await cangkulanService.getPlayerHistory(publicKey);
+      const fetchedGames = await cangkulanService.getPlayerHistory(publicKey);
       // Show newest first
-      setHistory([...games].reverse());
+      setGames([...fetchedGames].reverse());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load history');
     } finally {
       setLoading(false);
     }
-  }, [publicKey]);
+  }, [publicKey, cangkulanService]); // Added cangkulanService to dependencies
 
   useEffect(() => {
     fetchHistory();
   }, [fetchHistory]);
 
   // ── Stats summary ──────────────────────────────────────────────────────
-  const wins = history.filter(g => g.outcome === 1).length;
-  const losses = history.filter(g => g.outcome === 2).length;
-  const draws = history.filter(g => g.outcome === 3).length;
-  const winRate = history.length > 0 ? Math.round((wins / history.length) * 100) : 0;
-  const totalTricksWon = history.reduce((sum, g) => sum + g.tricks_won, 0);
-  const totalTricksLost = history.reduce((sum, g) => sum + g.tricks_lost, 0);
+  const wins = games.filter(g => g.outcome === 1).length;
+  const losses = games.filter(g => g.outcome === 2).length;
+  const draws = games.filter(g => g.outcome === 3).length;
+  const winRate = games.length > 0 ? Math.round((wins / games.length) * 100) : 0;
+  const totalTricksWon = games.reduce((sum, g) => sum + g.tricks_won, 0);
+  const totalTricksLost = games.reduce((sum, g) => sum + g.tricks_lost, 0);
 
   // ── Streak calculation ─────────────────────────────────────────────────
   let currentStreak = 0;
   let streakType: 'win' | 'loss' | null = null;
-  for (const g of history) { // history is already newest-first
+  for (const g of games) { // games is already newest-first
     if (g.outcome === 3) break; // draw breaks streak
     if (streakType === null) {
       streakType = g.outcome === 1 ? 'win' : 'loss';
@@ -142,7 +145,7 @@ export function HistoryPage({ navigate }: HistoryPageProps) {
       <PageHero
         icon="📜"
         title="Game History"
-        subtitle={publicKey ? `Your last ${history.length} games on-chain` : 'Connect wallet to view history'}
+        subtitle={publicKey ? `Your last ${games.length} games on-chain` : 'Connect wallet to view history'}
         gradient="from-amber-600 via-orange-600 to-red-700"
         navigate={navigate}
         backTo={{ page: 'home' }}
@@ -244,7 +247,7 @@ export function HistoryPage({ navigate }: HistoryPageProps) {
           {/* Extra stats row */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
             <div className="p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-center">
-              <div className="text-lg font-bold text-gray-800 dark:text-gray-200">{history.length}</div>
+              <div className="text-lg font-bold text-gray-800 dark:text-gray-200">{games.length}</div>
               <div className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase">Total Games</div>
             </div>
             <div className="p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-center">
@@ -266,7 +269,7 @@ export function HistoryPage({ navigate }: HistoryPageProps) {
           </div>
 
           {/* Game list */}
-          {history.length === 0 ? (
+          {games.length === 0 ? (
             <div className="text-center py-16 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
               <div className="text-4xl mb-3">🎴</div>
               <p className="text-gray-500 dark:text-gray-400 font-medium">No games found yet</p>
@@ -282,7 +285,7 @@ export function HistoryPage({ navigate }: HistoryPageProps) {
             </div>
           ) : (
             <div className="space-y-2">
-              {history.map((game, idx) => {
+              {games.map((game, idx) => {
                 const info = outcomeInfo(game.outcome);
                 return (
                   <div
@@ -307,13 +310,26 @@ export function HistoryPage({ navigate }: HistoryPageProps) {
                       </div>
                     </div>
 
-                    {/* Time ago */}
-                    <div className="text-right flex-shrink-0">
+                    {/* Time ago and Stellar Expert Link */}
+                    <div className="text-right flex-shrink-0 flex flex-col items-end">
                       {currentLedger > 0 && (
                         <div className="text-xs text-gray-400 dark:text-gray-500">
                           {ledgerToTimeAgo(game.ledger, currentLedger)}
                         </div>
                       )}
+                      {(() => {
+                        const expertLink = getStellarExpertLink('contract', getActiveCangkulanContract());
+                        if (!expertLink) {
+                          return <div className="text-[10px] uppercase font-bold text-gray-400">Local Node</div>;
+                        }
+                        return (
+                          <a href={`${expertLink}?filter=events`}
+                            target="_blank" rel="noopener noreferrer"
+                            className="shrink-0 text-sm opacity-50 hover:opacity-100 transition-opacity">
+                            ↗
+                          </a>
+                        );
+                      })()}
                     </div>
                   </div>
                 );

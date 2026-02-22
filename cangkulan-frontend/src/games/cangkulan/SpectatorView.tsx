@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { CangkulanService } from './cangkulanService';
-import { CANGKULAN_CONTRACT } from '@/utils/constants';
+import { getActiveCangkulanContract, getActiveGameHubContract, getStellarExpertLink } from '@/utils/constants';
+import { useNetworkStore } from '@/store/networkStore';
 import type { GameState, TrickRecord } from './types';
 import { LIFECYCLE, TRICK, OUTCOME, POINTS_DECIMALS } from './types';
 import { cardSuit, cardLabel, SUIT_NAMES, SUIT_SYMBOLS } from './cardHelpers';
@@ -11,7 +12,6 @@ import { GameTable } from './GameTable';
 //  Spectator View — read-only game observation (no hand reveal, no actions)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const service = new CangkulanService(CANGKULAN_CONTRACT);
 
 function phaseLabel(state: number): string {
   switch (state) {
@@ -41,6 +41,9 @@ interface SpectatorViewProps {
 }
 
 export function SpectatorView({ sessionId, onExit }: SpectatorViewProps) {
+  const activeNetwork = useNetworkStore(s => s.activeNetwork);
+  const service = useMemo(() => new CangkulanService(getActiveCangkulanContract()), [activeNetwork]);
+
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [trickLog, setTrickLog] = useState<TrickRecord[]>([]);
@@ -192,8 +195,8 @@ export function SpectatorView({ sessionId, onExit }: SpectatorViewProps) {
           </p>
           <div className="flex justify-center gap-4">
             <span className={`px-3 py-1 rounded-full text-xs font-bold ${gameState.seed_commit1 != null
-                ? 'bg-green-100 text-green-700'
-                : 'bg-gray-100 text-gray-500'
+              ? 'bg-green-100 text-green-700'
+              : 'bg-gray-100 text-gray-500'
               }`}>
               P1: {gameState.lifecycle_state === LIFECYCLE.SEED_REVEAL
                 ? (gameState.seed_revealed1 ? '✓ Revealed' : '🔒 Locked')
@@ -201,8 +204,8 @@ export function SpectatorView({ sessionId, onExit }: SpectatorViewProps) {
               }
             </span>
             <span className={`px-3 py-1 rounded-full text-xs font-bold ${gameState.seed_commit2 != null
-                ? 'bg-green-100 text-green-700'
-                : 'bg-gray-100 text-gray-500'
+              ? 'bg-green-100 text-green-700'
+              : 'bg-gray-100 text-gray-500'
               }`}>
               P2: {gameState.lifecycle_state === LIFECYCLE.SEED_REVEAL
                 ? (gameState.seed_revealed2 ? '✓ Revealed' : '🔒 Locked')
@@ -255,9 +258,30 @@ export function SpectatorView({ sessionId, onExit }: SpectatorViewProps) {
                   ? 'Draw!'
                   : 'Unresolved'}
           </p>
-          <div className="flex justify-center gap-6 mt-3 text-sm text-gray-600">
+          <div className="flex justify-center gap-6 mt-3 mb-6 text-sm text-gray-600">
             <span>P1: {gameState.tricks_won1} tricks</span>
             <span>P2: {gameState.tricks_won2} tricks</span>
+          </div>
+
+          {/* Verify & Explore Links */}
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs mt-4">
+            {getStellarExpertLink('contract', getActiveCangkulanContract()) && (
+              <a href={`${getStellarExpertLink('contract', getActiveCangkulanContract())}?filter=events`}
+                target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 no-underline font-semibold transition-colors">
+                🔗 Game Contract Events ↗
+              </a>
+            )}
+            {getStellarExpertLink('contract', getActiveGameHubContract()) && (
+              <a href={`${getStellarExpertLink('contract', getActiveGameHubContract())}?filter=events`}
+                target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 no-underline font-semibold transition-colors">
+                🏆 Winner Proof (Game Hub) ↗
+              </a>
+            )}
+            <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 font-mono">
+              Session #{sessionId}
+            </span>
           </div>
         </div>
       )}

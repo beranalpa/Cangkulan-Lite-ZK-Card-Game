@@ -74,7 +74,7 @@ async function getGameView(sid: number, viewer: string): Promise<CangkulanGame |
 async function signAndSend(tx: any) {
   for (let i = 0; i < 3; i++) {
     try { const sim = await tx.simulate(); try { return await sim.signAndSend(); } catch (e: any) { if (e.message?.includes('NoSignatureNeeded')) return await sim.signAndSend({ force: true }); throw e; } }
-    catch (e) { if (i < 2) await sleep(3000); else throw e; }
+    catch (e) { if (i < 2) { console.log(e); await sleep(3000); } else throw e; }
   }
 }
 
@@ -97,7 +97,7 @@ async function playSingleBattle(p1: Keypair, p2: Keypair, sid: number) {
   (txStart as any).built.operations[0].auth = authEntries;
   const txObj = TransactionBuilder.fromXDR(txStart.toXDR(), NETWORK_PASSPHRASE); txObj.sign(p2);
   const sr = await server.sendTransaction(txObj);
-  let gr = await server.getTransaction(sr.hash); while (gr.status === 'NOT_FOUND') { await sleep(2000); gr = await server.getTransaction(sr.hash); }
+  let gr = await server.getTransaction(sr.hash); while (gr.status === 'NOT_FOUND') { await sleep(2000); gr = await server.getTransaction(sr.hash); } if(gr.status==='FAILED'){ console.log(JSON.stringify(gr.resultMetaXdr)); throw new Error('Game Start Failed'); }
   log(`${c.green}✅ Game initialized on-chain${c.reset}`);
 
   // 2. Commit & Reveal Seeds

@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react';
 import { isSoundMuted, toggleSoundMuted } from '@/games/cangkulan/soundHelpers';
 import { clearGameHistory, loadGameHistory } from '@/games/cangkulan/gameHistory';
 import { clearActiveSession } from '@/hooks/useHashRouter';
-import { CANGKULAN_CONTRACT, ZK_VERIFIER_CONTRACT, GAME_HUB_CONTRACT, STELLAR_EXPERT_BASE } from '@/utils/constants';
+import {
+  getActiveCangkulanContract, getActiveZkVerifierContract,
+  getActiveGameHubContract, getActiveLeaderboardContract,
+  getStellarExpertLink, isLocalNetwork, type StellarNetwork
+} from '@/utils/constants';
 import { useWallet } from '@/hooks/useWallet';
 import { ConnectionModal } from '@/components/ConnectionScreen';
 import { useLocale, SUPPORTED_LOCALES, type SupportedLocale } from '@/i18n';
@@ -15,7 +19,6 @@ import type { AppRoute } from '@/hooks/useHashRouter';
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const THEME_KEY = 'cangkulan-theme';
-const STELLAR_EXPERT = STELLAR_EXPERT_BASE;
 
 function getTheme(): 'light' | 'dark' {
   try { return (localStorage.getItem(THEME_KEY) as 'dark') === 'dark' ? 'dark' : 'light'; } catch { return 'light'; }
@@ -23,7 +26,7 @@ function getTheme(): 'light' | 'dark' {
 
 function setTheme(t: 'light' | 'dark') {
   document.documentElement.setAttribute('data-theme', t);
-  try { localStorage.setItem(THEME_KEY, t); } catch {}
+  try { localStorage.setItem(THEME_KEY, t); } catch { }
 }
 
 interface SettingsPageProps {
@@ -93,7 +96,7 @@ export function SettingsPage({ navigate }: SettingsPageProps) {
     window.location.reload();
   };
 
-  const shortAddr = (addr: string) => addr.length > 16 ? `${addr.slice(0, 8)}…${addr.slice(-6)}` : addr;
+  const shortAddr = (addr: string) => addr.length > 16 ? `${addr.slice(0, 8)}…${addr.slice(-6)} ` : addr;
 
   return (
     <div className="space-y-6">
@@ -144,11 +147,10 @@ export function SettingsPage({ navigate }: SettingsPageProps) {
             <button
               key={l.code}
               onClick={() => setLocale(l.code)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                locale === l.code
-                  ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'hover:opacity-80'
-              }`}
+              className={`flex items - center gap - 1.5 px - 4 py - 2 rounded - lg text - sm font - medium transition - all ${locale === l.code
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'hover:opacity-80'
+                } `}
               style={locale !== l.code ? { background: 'var(--color-bg)', color: 'var(--color-ink)', border: '1px solid var(--color-border)' } : undefined}
             >
               <span>{l.flag}</span>
@@ -272,20 +274,36 @@ export function SettingsPage({ navigate }: SettingsPageProps) {
         <h3 className="text-sm font-semibold uppercase" style={{ color: 'var(--color-ink-muted)' }}>Contracts</h3>
         <div className="space-y-2">
           {[
-            { icon: '🃏', label: 'Cangkulan Contract', id: CANGKULAN_CONTRACT },
-            { icon: '🔒', label: 'ZK Verifier', id: ZK_VERIFIER_CONTRACT },
-            { icon: '🏛️', label: 'Game Hub', id: GAME_HUB_CONTRACT },
-          ].map(c => (
-            <a key={c.label} href={`${STELLAR_EXPERT}/${c.id}`} target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-between p-2.5 rounded-lg hover:shadow-md transition-all group"
-              style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
-              <div>
-                <div className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>{c.icon} {c.label}</div>
-                <div className="text-xs font-mono mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>{shortAddr(c.id)}</div>
-              </div>
-              <span style={{ color: 'var(--color-ink-muted)' }}>↗</span>
-            </a>
-          ))}
+            { icon: '🃏', label: 'Cangkulan Contract', id: getActiveCangkulanContract() },
+            { icon: '🔒', label: 'ZK Verifier', id: getActiveZkVerifierContract() },
+            { icon: '🏛️', label: 'Game Hub', id: getActiveGameHubContract() },
+            { icon: '📊', label: 'Leaderboard', id: getActiveLeaderboardContract() },
+          ].map(c => {
+            const expertLink = getStellarExpertLink('contract', c.id);
+            if (!expertLink) {
+              return (
+                <div key={c.label} className="flex items-center justify-between p-2.5 rounded-lg"
+                  style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
+                  <div>
+                    <div className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>{c.icon} {c.label}</div>
+                    <div className="text-xs font-mono mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>{shortAddr(c.id)}</div>
+                  </div>
+                  <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">Local</span>
+                </div>
+              );
+            }
+            return (
+              <a key={c.label} href={expertLink} target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-between p-2.5 rounded-lg hover:shadow-md transition-all group"
+                style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
+                <div>
+                  <div className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>{c.icon} {c.label}</div>
+                  <div className="text-xs font-mono mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>{shortAddr(c.id)}</div>
+                </div>
+                <span style={{ color: 'var(--color-ink-muted)' }}>↗</span>
+              </a>
+            );
+          })}
         </div>
       </div>
 

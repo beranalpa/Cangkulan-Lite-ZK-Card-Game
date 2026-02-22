@@ -77,9 +77,13 @@ async function ensureTestnetFunded(address: string): Promise<void> {
   if (!fundRes.ok) {
     throw new Error(`Friendbot funding failed (${fundRes.status}) for ${address}`);
   }
-  for (let attempt = 0; attempt < 5; attempt++) {
-    await new Promise((r) => setTimeout(r, 750));
-    if (await testnetAccountExists(address)) return;
+  for (let attempt = 0; attempt < 12; attempt++) {
+    await new Promise((r) => setTimeout(r, 1500));
+    if (await testnetAccountExists(address)) {
+      // Small extra buffer for Soroban RPC to catch up after Horizon sees it
+      await new Promise((r) => setTimeout(r, 1000));
+      return;
+    }
   }
   throw new Error(`Funded ${address} but it still doesn't appear on Horizon yet`);
 }
@@ -192,8 +196,18 @@ for (const contract of allContracts) {
 
 // Handle admin identity (needs to be in Stellar CLI for deployment)
 console.log('Setting up admin identity...');
-console.log('📝 Generating new admin identity...');
-const adminKeypair = Keypair.random();
+
+let adminKeypair: StellarKeypair;
+const adminSecretFromEnv = getEnvValue(existingEnv, 'VITE_DEV_ADMIN_SECRET');
+
+if (adminSecretFromEnv && adminSecretFromEnv !== 'NOT_AVAILABLE') {
+  console.log('✅ Using existing admin from .env');
+  adminKeypair = Keypair.fromSecret(adminSecretFromEnv);
+} else {
+  console.log('📝 Generating new admin identity...');
+  adminKeypair = Keypair.random();
+  walletSecrets.admin = adminKeypair.secret();
+}
 
 walletAddresses.admin = adminKeypair.publicKey();
 
@@ -290,6 +304,12 @@ if (shouldEnsureMock) {
 for (const contract of contracts) {
   if (contract.isMockHub) continue;
 
+  const existingId = deployed[contract.packageName];
+  if (existingId && (await testnetContractExists(existingId))) {
+    console.log(`✅ Using existing ${contract.packageName} on testnet: ${existingId}\n`);
+    continue;
+  }
+
   console.log(`Deploying ${contract.packageName}...`);
   try {
     console.log("  Installing WASM...");
@@ -334,7 +354,7 @@ for (const contract of contracts) {
 
 // ── UltraHonk Verifier (pre-built WASM, deployed separately) ──────────────
 const ULTRAHONK_WASM = 'contracts/ultrahonk-verifier/rs_soroban_ultrahonk.wasm';
-const ULTRAHONK_VK   = 'circuits/seed_verify/target/vk';
+const ULTRAHONK_VK = 'circuits/seed_verify/target/vk';
 
 let ultrahonkId = deployed['ultrahonk-verifier'] || existingContractIds['ultrahonk-verifier'] || '';
 const cangkulanId = deployed['cangkulan'] || existingContractIds['cangkulan'] || '';

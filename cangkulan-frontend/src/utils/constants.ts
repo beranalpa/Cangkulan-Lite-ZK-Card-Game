@@ -81,8 +81,9 @@ const _bindingsCangkulanId = cangkulanNetworks.testnet.contractId;
 // Contract IDs
 export const MOCK_GAME_HUB_CONTRACT = getContractId('mock-game-hub');
 export const CANGKULAN_CONTRACT = getContractId('cangkulan') || _bindingsCangkulanId;
-export const ZK_VERIFIER_CONTRACT = getContractId('zk-verifier') || 'CBOIHT66ZGS27774KVO6CYFQ46VYG2SCKCQBG2LUO6JYRZGKHD3XBRMW';
+export const ZK_VERIFIER_CONTRACT = getContractId('zk-verifier') || 'CDWAQJHSNGRR6W23AMCILKGF6N2XKIQUPE7EGASAWADTARJ6QU6V45WZ';
 export const GAME_HUB_CONTRACT = getContractId('mock-game-hub') || 'CB4VZAT2U3UC6XFK3N23SKRF2NDCMP3QHJYMCHHFMZO7MRQO6DQ2EMYG';
+export const LEADERBOARD_CONTRACT = getContractId('leaderboard') || 'CDWQKQLCMFZUUT2SE4SAUJWPCGYOYOB434J46THFMP6TTJGOR7L54G6E';
 export const STELLAR_EXPERT_BASE = 'https://stellar.expert/explorer/testnet/contract';
 
 // Dev wallet addresses
@@ -131,6 +132,10 @@ export function getActiveGameHubContract(): string {
   return getActiveContractId('mock-game-hub', GAME_HUB_CONTRACT);
 }
 
+export function getActiveLeaderboardContract(): string {
+  return getActiveContractId('leaderboard', LEADERBOARD_CONTRACT);
+}
+
 /** True when the URL is plain HTTP (e.g. local quickstart node). */
 export function needsAllowHttp(url?: string): boolean {
   return (url ?? getActiveRpcUrl()).startsWith('http://');
@@ -144,4 +149,15 @@ export function getActiveHorizonUrl(): string {
 /** Returns the Friendbot URL for the active network. */
 export function getActiveFriendbotUrl(): string {
   return getActiveNetworkConfig().friendbotUrl;
+}
+
+/**
+ * Returns a Stellar Expert explorer link if on testnet.
+ * @param type - 'tx' or 'contract'
+ * @param id - The hash or contract ID
+ */
+export function getStellarExpertLink(type: 'tx' | 'contract', id: string): string | null {
+  const activeNetwork = getActiveNetwork();
+  if (activeNetwork !== 'testnet') return null;
+  return `https://stellar.expert/explorer/testnet/${type}/${id}`;
 }

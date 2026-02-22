@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNetworkStore } from '@/store/networkStore';
+import { getStellarExpertLink } from '@/utils/constants';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 //  Types
@@ -140,26 +141,32 @@ export function TransactionLog({
                   {time}
                 </span>
 
-                {/* Stellar Expert Link (only on Testnet) */}
-                {!isLocalNetwork ? (
-                  <a
-                    href={`${STELLAR_EXPERT_BASE}/${tx.txHash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-mono transition-colors border border-indigo-200 no-underline"
-                    title={`View on Stellar Expert: ${tx.txHash}`}
-                  >
-                    <span>{shortHash}</span>
-                    <span className="text-indigo-400">↗</span>
-                  </a>
-                ) : (
-                  <span
-                    className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-md bg-gray-50 text-gray-500 text-xs font-mono border border-gray-200"
-                    title="Local Node Tx: No explorer available"
-                  >
-                    {shortHash}
-                  </span>
-                )}
+                {/* Stellar Expert Link (only on Testnet or when URL is available) */}
+                {(() => {
+                  const explorerLink = getStellarExpertLink('tx', tx.txHash);
+                  if (explorerLink) {
+                    return (
+                      <a
+                        href={explorerLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-mono transition-colors border border-indigo-200 no-underline"
+                        title={`View on Stellar Expert: ${tx.txHash}`}
+                      >
+                        <span>{shortHash}</span>
+                        <span className="text-indigo-400">↗</span>
+                      </a>
+                    );
+                  }
+                  return (
+                    <span
+                      className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-md bg-gray-50 text-gray-500 text-xs font-mono border border-gray-200"
+                      title="Local Node Tx: No explorer available"
+                    >
+                      {shortHash}
+                    </span>
+                  );
+                })()}
               </div>
             );
           })}

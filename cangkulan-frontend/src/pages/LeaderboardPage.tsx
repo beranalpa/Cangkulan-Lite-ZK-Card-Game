@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { rpc, xdr, Address } from '@stellar/stellar-sdk';
-import { RPC_URL, CANGKULAN_CONTRACT, needsAllowHttp } from '@/utils/constants';
+import { getActiveRpcUrl, getActiveCangkulanContract, needsAllowHttp } from '@/utils/constants';
 import { log } from '@/utils/logger';
 import type { AppRoute } from '@/hooks/useHashRouter';
 import { PageHero } from '@/components/PageHero';
@@ -114,7 +114,7 @@ async function fetchGameEvents(
   const results: { data: xdr.ScVal; ledger: number }[] = [];
   let cursor: string | undefined;
   let currentStart = startLedger;
-  const contractId = CANGKULAN_CONTRACT;
+  const contractId = getActiveCangkulanContract();
   if (!contractId) return results;
 
   try {
@@ -320,7 +320,8 @@ export function LeaderboardPage({ navigate }: { navigate: (route: AppRoute) => v
   const fetchLeaderboard = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
     try {
-      const server = new rpc.Server(RPC_URL, { allowHttp: needsAllowHttp(RPC_URL) });
+      const rpcUrl = getActiveRpcUrl();
+      const server = new rpc.Server(rpcUrl, { allowHttp: needsAllowHttp(rpcUrl) });
       const latestLedger = await server.getLatestLedger();
       // Ledger rate: ~5 seconds per ledger
       // Calculate lookback: days * 24h * 60m * 60s / 5s = days * 17,280 ledgers

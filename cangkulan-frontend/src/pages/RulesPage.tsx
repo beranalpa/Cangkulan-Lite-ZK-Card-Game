@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 import type { AppRoute } from '@/hooks/useHashRouter';
-import { CANGKULAN_CONTRACT, ZK_VERIFIER_CONTRACT, GAME_HUB_CONTRACT, STELLAR_EXPERT_BASE, getContractId } from '@/utils/constants';
+import { getActiveCangkulanContract, getActiveZkVerifierContract, getActiveGameHubContract, getActiveLeaderboardContract, getStellarExpertLink } from '@/utils/constants';
 import { PageHero } from '@/components/PageHero';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -288,27 +288,39 @@ export function RulesPage({ navigate }: RulesPageProps) {
         </h3>
         <div className="space-y-1">
           {[
-            { label: 'Cangkulan Game', id: CANGKULAN_CONTRACT },
-            { label: 'ZK Verifier', id: ZK_VERIFIER_CONTRACT },
-            { label: 'Leaderboard', id: getContractId('leaderboard') },
-            { label: 'Game Hub', id: GAME_HUB_CONTRACT },
-          ].filter(c => c.id).map(c => (
-            <a
-              key={c.label}
-              href={`${STELLAR_EXPERT_BASE}/${c.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 text-xs no-underline group py-2 px-3 rounded-lg transition-all hover:shadow-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200"
-              style={{ background: 'transparent' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              <span className="font-semibold shrink-0 w-28">{c.label}</span>
-              <span className="font-mono text-[10px] truncate hidden sm:inline" style={{ color: 'var(--color-ink-muted)' }} title={c.id}>{c.id}</span>
-              <span className="font-mono text-[10px] sm:hidden" style={{ color: 'var(--color-ink-muted)' }}>{truncAddr(c.id)}</span>
-              <span className="ml-auto shrink-0 text-[10px]" style={{ color: 'var(--color-ink-muted)' }}>↗</span>
-            </a>
-          ))}
+            { label: 'Cangkulan Game', id: getActiveCangkulanContract() },
+            { label: 'ZK Verifier', id: getActiveZkVerifierContract() },
+            { label: 'Game Hub', id: getActiveGameHubContract() },
+            { label: 'Leaderboard Tracker', id: getActiveLeaderboardContract() },
+          ].filter(c => c.id).map(c => {
+            const expertLink = getStellarExpertLink('contract', c.id);
+            if (!expertLink) {
+              return (
+                <div key={c.label} className="flex items-center gap-3 text-xs py-2 px-3 rounded-lg text-gray-500">
+                  <span className="font-semibold shrink-0 w-28">{c.label}</span>
+                  <span className="font-mono text-[10px] truncate hidden sm:inline">{c.id}</span>
+                  <span className="ml-auto shrink-0 text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-gray-100">Local</span>
+                </div>
+              );
+            }
+            return (
+              <a
+                key={c.label}
+                href={expertLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-xs no-underline group py-2 px-3 rounded-lg transition-all hover:shadow-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200"
+                style={{ background: 'transparent' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <span className="font-semibold shrink-0 w-28">{c.label}</span>
+                <span className="font-mono text-[10px] truncate hidden sm:inline" style={{ color: 'var(--color-ink-muted)' }} title={c.id}>{c.id}</span>
+                <span className="font-mono text-[10px] sm:hidden" style={{ color: 'var(--color-ink-muted)' }}>{truncAddr(c.id)}</span>
+                <span className="ml-auto shrink-0 text-[10px]" style={{ color: 'var(--color-ink-muted)' }}>↗</span>
+              </a>
+            );
+          })}
         </div>
       </section>
 

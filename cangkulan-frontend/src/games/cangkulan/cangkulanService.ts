@@ -190,6 +190,7 @@ export class CangkulanService {
       contractId: this.contractId, // Cangkulan contract (requires multi-sig)
       networkPassphrase: this.networkPassphrase,
       rpcUrl: this.rpcUrl,
+      allowHttp: needsAllowHttp(this.rpcUrl),
       publicKey: player2,
     });
 
@@ -335,6 +336,7 @@ export class CangkulanService {
       contractId: this.contractId, // Cangkulan contract (requires multi-sig)
       networkPassphrase: this.networkPassphrase,
       rpcUrl: this.rpcUrl,
+      allowHttp: needsAllowHttp(this.rpcUrl),
       publicKey: player2Address,
     });
     const tx = await buildClient.start_game({
@@ -423,6 +425,7 @@ export class CangkulanService {
       contractId: this.contractId, // Cangkulan contract (requires multi-sig)
       networkPassphrase: this.networkPassphrase,
       rpcUrl: this.rpcUrl,
+      allowHttp: needsAllowHttp(this.rpcUrl),
       publicKey: player2,
     });
     const tx = await client.start_game({

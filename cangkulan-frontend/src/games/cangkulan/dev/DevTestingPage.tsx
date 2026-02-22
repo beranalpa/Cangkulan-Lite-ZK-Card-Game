@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import { useWallet } from '@/hooks/useWallet';
 import { CangkulanService } from '../cangkulanService';
 import { CANGKULAN_CONTRACT, getActiveCangkulanContract } from '@/utils/constants';
@@ -27,7 +27,7 @@ function ContractInspector() {
   const [error, setError] = useState<string | null>(null);
   const activeNetwork = useNetworkStore(s => s.activeNetwork);
 
-  const service = new CangkulanService(getActiveCangkulanContract());
+  const service = useMemo(() => new CangkulanService(getActiveCangkulanContract()), [activeNetwork]);
 
   const loadState = async () => {
     const sid = parseInt(sessionId, 10);
@@ -256,7 +256,7 @@ export function DevTestingPage({ userAddress, navigate, onBack }: DevTestingPage
             onGameComplete={() => setShowGame(false)}
             navigate={navigate}
             gameMode="dev"
-            autoQuickstart={true}
+            autoQuickstart={false}
           />
         </Suspense>
       </div>

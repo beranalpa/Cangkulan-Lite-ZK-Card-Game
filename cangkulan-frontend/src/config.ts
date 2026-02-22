@@ -14,6 +14,8 @@ export const config = {
   // Named aliases for key contracts
   mockGameHubId: getContractId('mock-game-hub'),
   cangkulanId: getContractId('cangkulan'),
+  zkVerifierId: getContractId('zk-verifier'),
+  leaderboardId: getContractId('leaderboard'),
 
   devPlayer1Address: import.meta.env.VITE_DEV_PLAYER1_ADDRESS || '',
   devPlayer2Address: import.meta.env.VITE_DEV_PLAYER2_ADDRESS || '',
