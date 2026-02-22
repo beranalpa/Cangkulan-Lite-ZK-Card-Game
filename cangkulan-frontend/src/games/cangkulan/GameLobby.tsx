@@ -271,10 +271,10 @@ async function fetchRecentGames(): Promise<LobbyGame[]> {
 function isGameStuck(game: LobbyGame): boolean {
   if (!game.createdAt) return false;
   const ageMs = Date.now() - game.createdAt;
-  const FIVE_MIN_MS = 5 * 60 * 1000;
-  const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
-  if ((game.status === 'seed-commit' || game.status === 'seed-reveal') && ageMs > FIVE_MIN_MS) return true;
-  if (game.status === 'playing' && ageMs > TWO_HOURS_MS) return true;
+  // USER requested removing games after 15 minutes of inactivity/no updates
+  const FIFTEEN_MIN_MS = 15 * 60 * 1000;
+
+  if (ageMs > FIFTEEN_MIN_MS) return true;
   return false;
 }
 
