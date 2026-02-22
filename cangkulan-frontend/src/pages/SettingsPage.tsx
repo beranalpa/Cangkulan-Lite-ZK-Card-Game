@@ -5,6 +5,7 @@ import { clearActiveSession } from '@/hooks/useHashRouter';
 import {
   getActiveCangkulanContract, getActiveZkVerifierContract,
   getActiveGameHubContract, getActiveLeaderboardContract,
+  getActiveUltrahonkVerifierContract,
   getStellarExpertLink, isLocalNetwork, type StellarNetwork
 } from '@/utils/constants';
 import { useWallet } from '@/hooks/useWallet';
@@ -276,6 +277,7 @@ export function SettingsPage({ navigate }: SettingsPageProps) {
           {[
             { icon: '🃏', label: 'Cangkulan Contract', id: getActiveCangkulanContract() },
             { icon: '🔒', label: 'ZK Verifier', id: getActiveZkVerifierContract() },
+            { icon: '🌑', label: 'UltraHonk Verifier', id: getActiveUltrahonkVerifierContract() },
             { icon: '🏛️', label: 'Game Hub', id: getActiveGameHubContract() },
             { icon: '📊', label: 'Leaderboard', id: getActiveLeaderboardContract() },
           ].map(c => {

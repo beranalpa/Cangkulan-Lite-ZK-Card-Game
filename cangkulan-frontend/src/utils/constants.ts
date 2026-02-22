@@ -84,6 +84,7 @@ export const CANGKULAN_CONTRACT = getContractId('cangkulan') || _bindingsCangkul
 export const ZK_VERIFIER_CONTRACT = getContractId('zk-verifier') || 'CA7RTG6G2WRKNKMJ57CAYWWC7IH3ZVIOLWVIUOMDTI65GMKGVO5YGRBM';
 export const GAME_HUB_CONTRACT = getContractId('mock-game-hub') || 'CB4VZAT2U3UC6XFK3N23SKRF2NDCMP3QHJYMCHHFMZO7MRQO6DQ2EMYG';
 export const LEADERBOARD_CONTRACT = getContractId('leaderboard') || 'CDZNFIVDP5VJCD2YKPSY6ZHELGXJQVJK7NBI2S56PMK4QB4PIBMICVHB';
+export const ULTRAHONK_VERIFIER_CONTRACT = getContractId('ultrahonk-verifier') || 'CD52VAWNT5LP5S7CLTCFWOQ3FTOSNJMAUAQBTWPI4ECCR55S6LX6IZ6A';
 export const STELLAR_EXPERT_BASE = 'https://stellar.expert/explorer/testnet/contract';
 
 // Dev wallet addresses
@@ -134,6 +135,10 @@ export function getActiveGameHubContract(): string {
 
 export function getActiveLeaderboardContract(): string {
   return getActiveContractId('leaderboard', LEADERBOARD_CONTRACT);
+}
+
+export function getActiveUltrahonkVerifierContract(): string {
+  return getActiveContractId('ultrahonk-verifier', ULTRAHONK_VERIFIER_CONTRACT);
 }
 
 /** True when the URL is plain HTTP (e.g. local quickstart node). */

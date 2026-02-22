@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 import type { AppRoute } from '@/hooks/useHashRouter';
-import { getActiveCangkulanContract, getActiveZkVerifierContract, getActiveGameHubContract, getActiveLeaderboardContract, getStellarExpertLink } from '@/utils/constants';
+import { getActiveCangkulanContract, getActiveZkVerifierContract, getActiveUltrahonkVerifierContract, getActiveGameHubContract, getActiveLeaderboardContract, getStellarExpertLink } from '@/utils/constants';
 import { PageHero } from '@/components/PageHero';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -290,6 +290,7 @@ export function RulesPage({ navigate }: RulesPageProps) {
           {[
             { label: 'Cangkulan Game', id: getActiveCangkulanContract() },
             { label: 'ZK Verifier', id: getActiveZkVerifierContract() },
+            { label: 'UltraHonk Verifier', id: getActiveUltrahonkVerifierContract() },
             { label: 'Game Hub', id: getActiveGameHubContract() },
             { label: 'Leaderboard Tracker', id: getActiveLeaderboardContract() },
           ].filter(c => c.id).map(c => {
