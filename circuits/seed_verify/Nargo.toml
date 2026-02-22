@@ -1,0 +1,6 @@
+[package]
+name = "seed_verify"
+type = "bin"
+authors = [""]
+
+[dependencies]
